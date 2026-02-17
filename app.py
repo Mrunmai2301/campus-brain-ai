@@ -3,67 +3,67 @@ import os
 from sentence_transformers import SentenceTransformer, util
 import torch
 
-# --------------------------------
-# Page Config — Premium Layout
-# --------------------------------
+# ---------------------------
+# PAGE CONFIG
+# ---------------------------
 st.set_page_config(
     page_title="Campus Brain AI",
     page_icon="🎓",
     layout="wide"
 )
 
-# --------------------------------
-# Custom Styling (Premium Look)
-# --------------------------------
+# ---------------------------
+# CUSTOM CSS — PREMIUM LOOK
+# ---------------------------
 st.markdown("""
 <style>
-.main-title {
-    font-size: 40px;
-    font-weight: bold;
-    color: #1f4ed8;
+
+.stApp {
+    background: linear-gradient(135deg,#0f172a,#020617);
+    color: white;
 }
-.subtitle {
-    font-size: 18px;
-    color: gray;
-}
+
 .card {
+    background: #111827;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    margin-bottom: 20px;
+}
+
+.topic-card {
+    background: #1f2937;
     padding: 20px;
     border-radius: 12px;
-    background-color: #f7f9fc;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    font-weight: bold;
 }
+
+h1, h2, h3 {
+    color: #e5e7eb;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------
-# Sidebar Navigation
-# --------------------------------
-st.sidebar.title("🎓 Campus Brain")
-st.sidebar.markdown("AI Academic Navigator")
-
-page = st.sidebar.radio(
-    "Navigate",
-    ["🔍 Search", "📚 Topics", "ℹ About"]
-)
-
-# --------------------------------
-# Load AI Model
-# --------------------------------
+# ---------------------------
+# LOAD MODEL
+# ---------------------------
 @st.cache_resource
 def load_model():
     return SentenceTransformer("all-MiniLM-L6-v2")
 
 model = load_model()
 
-# --------------------------------
-# Load Knowledge Files
-# --------------------------------
+# ---------------------------
+# LOAD DOCUMENTS
+# ---------------------------
 def load_documents(folder="knowledge"):
     docs = []
     names = []
 
     if not os.path.exists(folder):
-        return [], []
+        return docs, names
 
     for file in os.listdir(folder):
         if file.endswith(".txt"):
@@ -78,99 +78,95 @@ documents, doc_names = load_documents()
 if documents:
     doc_embeddings = model.encode(documents, convert_to_tensor=True)
 
-# =================================
-# 🔍 SEARCH PAGE
-# =================================
+# ---------------------------
+# SIDEBAR
+# ---------------------------
+st.sidebar.title("🎓 Campus Brain")
+page = st.sidebar.radio(
+    "Navigate",
+    ["🔍 Search", "📚 Topics", "ℹ About"]
+)
+
+# =====================================================
+# SEARCH PAGE
+# =====================================================
 if page == "🔍 Search":
 
-    st.markdown('<div class="main-title">🎓 Campus Brain AI</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Smart Academic Semantic Search Assistant</div>', unsafe_allow_html=True)
-    st.divider()
+    st.title("🔍 AI Academic Search")
 
-    query = st.text_input("🔍 Ask your academic question:")
+    query = st.text_input("Ask anything academic…")
 
     if query and documents:
 
-        with st.spinner("Analyzing knowledge…"):
+        with st.spinner("Thinking..."):
 
             query_embedding = model.encode(query, convert_to_tensor=True)
             similarities = util.cos_sim(query_embedding, doc_embeddings)[0]
-            best_match_idx = torch.argmax(similarities).item()
+            best_idx = torch.argmax(similarities).item()
 
-        st.success("Best academic match found!")
-
-        # Result Card
         st.markdown('<div class="card">', unsafe_allow_html=True)
 
-        st.subheader("📘 Best Match Source")
-        st.write(f"**{doc_names[best_match_idx]}**")
-
-        preview = documents[best_match_idx][:800]
-
-        with st.expander("📖 View Explanation"):
-            st.write(preview + "...")
+        st.subheader(f"📘 Best Match — {doc_names[best_idx]}")
+        st.write(documents[best_idx][:900] + "...")
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # Recommendation Card
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.subheader("💡 Recommended Next Learning")
+        # Recommendation logic
+        st.subheader("💡 Recommended Next Step")
 
-        name = doc_names[best_match_idx].lower()
+        name = doc_names[best_idx].lower()
 
         if "dbms" in name:
-            st.info("👉 Explore SQL basics next.")
+            st.success("👉 Learn SQL & database indexing")
         elif "sorting" in name:
-            st.info("👉 Learn recursion and searching algorithms.")
+            st.success("👉 Explore recursion & search algorithms")
         elif "os" in name:
-            st.info("👉 Study process scheduling concepts.")
+            st.success("👉 Study CPU scheduling")
         else:
-            st.info("👉 Continue exploring related fundamentals.")
+            st.success("👉 Continue related fundamentals")
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-# =================================
-# 📚 TOPICS PAGE
-# =================================
+# =====================================================
+# TOPICS PAGE
+# =====================================================
 elif page == "📚 Topics":
 
-    st.header("📚 Available Knowledge Topics")
+    st.title("📚 Knowledge Library")
 
-    if doc_names:
-        cols = st.columns(3)
+    cols = st.columns(3)
 
-        for i, name in enumerate(doc_names):
-            with cols[i % 3]:
-                st.markdown(
-                    f"""
-                    <div class="card">
-                    📘 <b>{name}</b>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-    else:
-        st.warning("No knowledge files found.")
+    for i, name in enumerate(doc_names):
+        with cols[i % 3]:
+            st.markdown(
+                f'<div class="topic-card">📘 {name}</div>',
+                unsafe_allow_html=True
+            )
 
-# =================================
-# ℹ ABOUT PAGE
-# =================================
+# =====================================================
+# ABOUT PAGE
+# =====================================================
 else:
 
-    st.header("ℹ About Campus Brain")
+    st.title("ℹ About Campus Brain")
 
-    st.write("""
-Campus Brain is an AI-powered semantic academic navigator designed
-to help students quickly understand complex topics.
+    st.markdown("""
+<div class="card">
 
-### Features
-✅ Semantic search  
-✅ Smart recommendations  
-✅ Academic knowledge assistant  
+Campus Brain AI is a semantic academic search system built for students.
 
-Built as a hackathon prototype demonstrating AI-assisted learning.
-""")
+✨ Features:
 
+• AI semantic retrieval  
+• Knowledge navigation  
+• Smart topic recommendation  
+• Fast learning discovery  
+
+Built as a hackathon prototype.
+
+</div>
+""", unsafe_allow_html=True)
+
+# ---------------------------
 st.divider()
-st.caption("🚀 Hackathon Prototype — Campus Brain AI")
+st.caption("🚀 Campus Brain AI — Hackathon Edition")
+
 
