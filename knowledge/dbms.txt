@@ -1,0 +1,15 @@
+Database Management System (DBMS) is software that enables users to create, manage, and organize databases efficiently. It provides a structured way to store large amounts of data while ensuring accuracy, security, and consistency. DBMS is widely used in academic institutions, banking systems, healthcare applications, and enterprise software where reliable data management is critical.
+
+One of the most important concepts in DBMS is database normalization. Normalization is a systematic process used to organize data in a database to reduce redundancy and improve data integrity. By structuring tables properly, normalization prevents duplication of data and ensures logical relationships between records.
+
+The primary goal of normalization is to eliminate anomalies that occur during data insertion, deletion, or updating. These anomalies can cause inconsistencies that make databases unreliable. Through normalization, data is broken into smaller related tables connected by keys, ensuring efficient storage and retrieval.
+
+Normalization is achieved through a series of stages called normal forms. The First Normal Form (1NF) ensures that all attributes contain atomic values and eliminates repeating groups. The Second Normal Form (2NF) removes partial dependency by ensuring that non-key attributes depend entirely on the primary key. The Third Normal Form (3NF) removes transitive dependency, ensuring that non-key attributes depend only on the primary key.
+
+Higher levels of normalization such as Boyce-Codd Normal Form (BCNF) further refine database structure to eliminate subtle redundancy issues. While normalization improves consistency, designers must balance normalization with performance requirements to avoid excessive table joins.
+
+A well-normalized database improves maintainability, scalability, and clarity of relationships. It ensures that data modifications occur in a single place, reducing errors and simplifying updates. This is especially important in systems where data accuracy is critical.
+
+In practical applications, normalization supports efficient database design in systems such as student information systems, inventory management platforms, and financial databases. By organizing data logically, developers create robust systems that are easier to maintain and extend.
+
+Understanding normalization is fundamental for database designers because it forms the foundation of structured data management. Proper normalization ensures reliable operations, minimizes redundancy, and improves overall system performance.
