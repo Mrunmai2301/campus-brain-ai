@@ -115,9 +115,6 @@ def toggle_auth():
 # ---------------------------------
 # AUTH SCREEN
 # ---------------------------------
-# ---------------------------------
-# AUTH SCREEN
-# ---------------------------------
 if not st.session_state.authenticated:
 
     # 1. Main Title (Placed outside any container/div to prevent styling bleed)
