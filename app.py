@@ -208,10 +208,38 @@ else:
 
     # --- OTHERS ---
     elif st.session_state.screen == "library":
-        st.markdown("## 📚 Study Library")
-        for n in doc_names: st.markdown(f"<div class='db-card'>📄 {n}</div>", unsafe_allow_html=True)
-        
-    elif st.session_state.screen == "recommend":
-        st.markdown("## 📈 Performance Tracking")
-        st.info("Visual analytics for your exam performance will appear here.")
 
+    st.markdown("## 📚 Study Library")
+
+    # -------------------------
+    # If a document is opened
+    # -------------------------
+    if st.session_state.open_doc is not None:
+
+        idx = st.session_state.open_doc
+
+        if st.button("⬅ Back to Library"):
+            st.session_state.open_doc = None
+            st.rerun()
+
+        st.markdown(f"""
+        <div class='db-card'>
+            <h3>{doc_names[idx]}</h3>
+            <p style='line-height:1.7'>{documents[idx]}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # -------------------------
+    # Library grid
+    # -------------------------
+    else:
+
+        cols = st.columns(3)
+
+        for i, name in enumerate(doc_names):
+
+            with cols[i % 3]:
+
+                if st.button(f"📄 {name}", use_container_width=True):
+                    st.session_state.open_doc = i
+                    st.rerun()
