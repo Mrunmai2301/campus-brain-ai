@@ -235,19 +235,33 @@ else:
                         f"<div class='db-card'><h3>{name}</h3><p>{documents[i]}</p></div>",
                         unsafe_allow_html=True
                     )
+     # CHAT               
 
-    # CHAT
     elif st.session_state.screen == "chat":
 
-        st.markdown("## 💬 AI Study Assistant")
+    st.markdown("## 💬 AI Study Assistant")
 
-        user_input = st.chat_input("Ask something about your syllabus...")
+    user_input = st.chat_input("Ask something about your syllabus...")
 
-        if user_input:
+    if user_input:
 
-            with st.chat_message("user"):
-                st.write(user_input)
+        with st.chat_message("user"):
+            st.write(user_input)
 
-            with st.chat_message("assistant"):
-                st.write("Based on your syllabus documents, here's a helpful explanation!")
+        # Convert question to embedding
+        query_embedding = model.encode(user_input, convert_to_tensor=True)
 
+        # Compute similarity with documents
+        sims = util.cos_sim(query_embedding, doc_embeddings)[0]
+        best_idx = torch.argmax(sims).item()
+
+        best_doc = documents[best_idx]
+        best_score = sims[best_idx].item()
+
+        with st.chat_message("assistant"):
+
+            if best_score > 0.3:
+                st.write(f"📚 From **{doc_names[best_idx]}**:\n")
+                st.write(best_doc)
+            else:
+                st.write("I couldn't find relevant material in your knowledge base.")
