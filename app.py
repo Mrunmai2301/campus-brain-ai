@@ -13,10 +13,10 @@ st.set_page_config(
 )
 
 # ----------------------------
-# SESSION STATE
+# SESSION STATE FOR NAVIGATION
 # ----------------------------
-if "page" not in st.session_state:
-    st.session_state.page = "home"
+if "screen" not in st.session_state:
+    st.session_state.screen = "home"
 
 # ----------------------------
 # LOAD MODEL
@@ -58,35 +58,40 @@ def load_documents(folder="knowledge"):
 documents, doc_names = load_documents()
 doc_embeddings = model.encode(documents, convert_to_tensor=True)
 
-# ----------------------------
-# HOME PAGE
-# ----------------------------
-if st.session_state.page == "home":
+# ====================================================
+# 🏠 HOME PAGE
+# ====================================================
+if st.session_state.screen == "home":
 
     st.title("🎓 Campus Brain - Basic AI Study Assistant")
 
-    st.write("Welcome! Click below to start chatting with AI.")
+    st.markdown("""
+    Welcome to your AI-powered study assistant.
 
-    if st.button("💬 Go to AI Chat"):
-        st.session_state.page = "chat"
+    This tool helps you understand syllabus topics easily.
+    """)
+
+    if st.button("🚀 Start Studying"):
+        st.session_state.screen = "chat"
         st.rerun()
 
-# ----------------------------
-# CHAT PAGE
-# ----------------------------
-elif st.session_state.page == "chat":
+# ====================================================
+# 💬 CHAT PAGE
+# ====================================================
+elif st.session_state.screen == "chat":
 
     # Back Button
-    if st.button("← Back to Home"):
-        st.session_state.page = "home"
+    if st.button("⬅ Back to Home"):
+        st.session_state.screen = "home"
         st.rerun()
 
-    st.markdown("## 💬 AI Study Assistant")
+    st.title("💬 AI Study Assistant")
 
     user_input = st.text_input("Ask something about your syllabus...")
 
     if user_input:
 
+        # Find best matching document
         query_embedding = model.encode(user_input, convert_to_tensor=True)
         sims = util.cos_sim(query_embedding, doc_embeddings)[0]
         best_idx = torch.argmax(sims).item()
@@ -110,5 +115,4 @@ If you study {topic_name}, you will understand its practical usage in real-world
 
         st.markdown(explanation)
 
-    st.markdown(explanation)
 
