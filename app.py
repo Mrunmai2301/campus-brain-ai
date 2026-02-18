@@ -225,7 +225,7 @@ else:
             unsafe_allow_html=True
         )
 
-    # LIBRARY
+        # LIBRARY
     elif st.session_state.screen == "library":
 
         st.markdown("## 📚 Study Library")
@@ -239,48 +239,49 @@ else:
                         f"<div class='db-card'><h3>{name}</h3><p>{documents[i]}</p></div>",
                         unsafe_allow_html=True
                     )
-      # CHAT
-   elif st.session_state.screen == "chat":
 
-    st.markdown("## 💬 AI Study Assistant")
+    # CHAT
+    elif st.session_state.screen == "chat":
 
-    user_input = st.chat_input("Ask something about your syllabus...")
+        st.markdown("## 💬 AI Study Assistant")
 
-    if user_input:
+        user_input = st.chat_input("Ask something about your syllabus...")
 
-        with st.chat_message("user"):
-            st.write(user_input)
+        if user_input:
 
-        # Retrieve most relevant document
-        query_embedding = model.encode(user_input, convert_to_tensor=True)
-        sims = util.cos_sim(query_embedding, doc_embeddings)[0]
-        best_idx = torch.argmax(sims).item()
-        context = documents[best_idx]
+            with st.chat_message("user"):
+                st.write(user_input)
 
-        # Send to OpenAI
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a helpful AI study assistant that explains academic topics clearly in simple student-friendly language."
-                },
-                {
-                    "role": "user",
-                    "content": f"""
-                    Context from syllabus:
-                    {context}
+            # Retrieve most relevant document
+            query_embedding = model.encode(user_input, convert_to_tensor=True)
+            sims = util.cos_sim(query_embedding, doc_embeddings)[0]
+            best_idx = torch.argmax(sims).item()
+            context = documents[best_idx]
 
-                    Student Question:
-                    {user_input}
+            # Send to OpenAI
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a helpful AI study assistant that explains academic topics clearly in simple student-friendly language."
+                    },
+                    {
+                        "role": "user",
+                        "content": f"""
+                        Context from syllabus:
+                        {context}
 
-                    Explain clearly with examples and simple language.
-                    """
-                }
-            ]
-        )
+                        Student Question:
+                        {user_input}
 
-        ai_answer = response.choices[0].message.content
+                        Explain clearly with examples and simple language.
+                        """
+                    }
+                ]
+            )
 
-        with st.chat_message("assistant"):
-            st.write(ai_answer)
+            ai_answer = response.choices[0].message.content
+
+            with st.chat_message("assistant"):
+                st.write(ai_answer)
