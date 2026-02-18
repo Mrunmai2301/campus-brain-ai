@@ -1,7 +1,7 @@
 import streamlit as st
 import os
-from sentence_transformers import SentenceTransformer, util
 import torch
+from sentence_transformers import SentenceTransformer, util
 
 # ---------------------------------
 # PAGE CONFIG
@@ -9,11 +9,11 @@ import torch
 st.set_page_config(
     page_title="Campus Brain AI",
     page_icon="🎓",
-    layout="centered"
+    layout="wide"
 )
 
 # ---------------------------------
-# PREMIUM UI CSS
+# MINIMALIST PREMIUM CSS
 # ---------------------------------
 st.markdown("""
 <style>
@@ -22,266 +22,200 @@ st.markdown("""
 :root {
     --primary: #8b5cf6;
     --bg-dark: #0b1120;
-    --card-bg: rgba(30, 41, 59, 0.65);
+    --card-bg: rgba(15, 23, 42, 0.8);
     --text-main: #f8fafc;
 }
 
 * { font-family: 'Plus Jakarta Sans', sans-serif; }
 
 .stApp {
-    background: radial-gradient(circle at top, #111827, #0b1120 60%);
-    color: var(--text-main);
+    background: radial-gradient(circle at top, #1e293b, #0b1120 70%);
 }
 
-header, footer { visibility: hidden; }
+[data-testid="stHeader"], [data-testid="stFooter"] { visibility: hidden; }
 
-/* Auth card */
+/* Ultra-Clean Auth Card */
 .auth-container {
-    max-width: 480px;
-    margin: 60px auto;
-    padding: 45px 35px;
+    max-width: 420px;
+    margin: 80px auto;
+    padding: 50px 40px;
     background: var(--card-bg);
-    border-radius: 24px;
-    border: 1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(18px);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-/* Inputs */
+/* Subtle Glow Effect */
+.auth-container::before {
+    content: "";
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    background: linear-gradient(45deg, #8b5cf6, transparent, #6366f1);
+    z-index: -1;
+    border-radius: 30px;
+    opacity: 0.15;
+}
+
+/* Input Customization */
 div[data-baseweb="input"] > div {
-    background: #1e293b !important;
-    border-radius: 14px !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    background-color: rgba(2, 6, 23, 0.5) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: white !important;
 }
 
-/* Buttons */
-.stButton > button[kind="primary"] {
-    background: linear-gradient(90deg,#8b5cf6,#6366f1);
-    border: none;
-    border-radius: 14px;
-    padding: 12px;
-    font-weight: 600;
-}
-
+/* Button Styling */
 .stButton > button {
-    border-radius: 14px;
+    border-radius: 12px !important;
+    transition: 0.3s all ease !important;
 }
 
-/* Gradient text */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1) !important;
+    border: none !important;
+    padding: 0.6rem 1rem !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3);
+}
+
 .grad-text {
-    background: linear-gradient(90deg,#a78bfa,#c084fc);
+    background: linear-gradient(135deg, #ddd6fe, #8b5cf6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
 }
 
-/* Dashboard cards */
 .db-card {
-    background: rgba(30,41,59,0.7);
-    padding: 25px;
-    border-radius: 18px;
+    background: rgba(30,41,59,0.5);
+    padding: 20px;
+    border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.05);
-    margin-bottom: 20px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------------
-# SESSION STATE INIT
+# INITIALIZE STATE
 # ---------------------------------
-defaults = {
-    "authenticated": False,
-    "user_name": "",
-    "screen": "welcome",
-    "auth_mode": "login",
-}
-
-for key, value in defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
+for key, val in {"authenticated": False, "user_name": "", "screen": "welcome", "auth_mode": "login"}.items():
+    if key not in st.session_state: st.session_state[key] = val
 
 # ---------------------------------
-# AUTH FUNCTIONS
-# ---------------------------------
-def handle_login():
-    st.session_state.authenticated = True
-    st.session_state.screen = "welcome"
-    st.rerun()
-
-def toggle_auth():
-    st.session_state.auth_mode = (
-        "register" if st.session_state.auth_mode == "login" else "login"
-    )
-
-# ---------------------------------
-# AUTH SCREEN
+# LOGIN / REGISTRATION SCREEN
 # ---------------------------------
 if not st.session_state.authenticated:
-
-    # 1. Main Title (Placed outside any container/div to prevent styling bleed)
-    st.markdown(
-        "<h1 style='text-align:center; margin-top:40px; margin-bottom:20px;' class='grad-text'>🎓 Campus Brain</h1>",
-        unsafe_allow_html=True
-    )
-
-    # 2. Opening the Card Div
+    
+    # Elegant Centered Header
+    st.markdown("<div style='text-align:center; margin-top:50px;'><h1 class='grad-text' style='font-size:3rem; margin-bottom:0;'>Campus Brain</h1><p style='color:#94a3b8; font-size:1.1rem;'>The future of student intelligence.</p></div>", unsafe_allow_html=True)
+    
     st.markdown('<div class="auth-container">', unsafe_allow_html=True)
-
-    # 3. Card Title
-    title = "Create Account" if st.session_state.auth_mode == "register" else "Welcome Back"
-    st.markdown(
-        f"<h2 class='grad-text' style='text-align:center; margin-bottom:30px;'>{title}</h2>",
-        unsafe_allow_html=True
-    )
-
-    # 4. Inputs and Logic
-    if st.session_state.auth_mode == "register":
-        name = st.text_input("Full Name", key="reg_name")
-        email = st.text_input("University Email", key="reg_email")
-        password = st.text_input("Password", type="password", key="reg_pass")
-        confirm_pw = st.text_input("Confirm Password", type="password", key="reg_confirm")
-
-        college = st.selectbox(
-            "Institution",
-            ["Engineering College", "Tech Institute", "Science University"],
-            key="reg_col"
-        )
-
-        if st.button("Complete Registration", use_container_width=True, type="primary"):
-            if name and email and password:
-                st.session_state.user_name = name
-                handle_login()
-            else:
-                st.error("Please fill all fields")
-
-        st.markdown("<p style='text-align:center; color:#94a3b8; margin-top:15px;'>Already have an account?</p>", unsafe_allow_html=True)
-        st.button("Back to Login", on_click=toggle_auth, use_container_width=True)
-
-    else:
-        email = st.text_input("Email", key="log_email")
-        password = st.text_input("Password", type="password", key="log_pass")
-
-        if st.button("Sign In to Campus Brain", use_container_width=True, type="primary"):
+    
+    if st.session_state.auth_mode == "login":
+        st.markdown("<h3 style='margin-bottom:25px;'>Sign In</h3>", unsafe_allow_html=True)
+        email = st.text_input("Email", placeholder="name@university.edu")
+        password = st.text_input("Password", type="password")
+        
+        if st.button("Access Dashboard", use_container_width=True, type="primary"):
             if email and password:
                 st.session_state.user_name = email.split("@")[0].capitalize()
-                handle_login()
+                st.session_state.authenticated = True
+                st.rerun()
+        
+        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+        st.button("Create new account", on_click=lambda: setattr(st.session_state, 'auth_mode', 'register'), use_container_width=True)
+    
+    else:
+        st.markdown("<h3 style='margin-bottom:25px;'>Join Campus Brain</h3>", unsafe_allow_html=True)
+        name = st.text_input("Full Name")
+        email = st.text_input("Student Email")
+        password = st.text_input("Password", type="password")
+        
+        if st.button("Verify & Create", use_container_width=True, type="primary"):
+            if name and email and password:
+                st.session_state.user_name = name
+                st.session_state.authenticated = True
+                st.rerun()
+                
+        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+        st.button("Back to login", on_click=lambda: setattr(st.session_state, 'auth_mode', 'login'), use_container_width=True)
 
-        st.markdown("<p style='text-align:center; color:#94a3b8; margin-top:15px;'>New to the platform?</p>", unsafe_allow_html=True)
-        st.button("Create Student Profile", on_click=toggle_auth, use_container_width=True)
-
-    # 5. Closing the Card Div
     st.markdown("</div>", unsafe_allow_html=True)
-
 
 # ---------------------------------
 # MAIN DASHBOARD
 # ---------------------------------
 else:
-
+    # Model & Data Logic (Kept from your context)
     @st.cache_resource
-    def load_model():
-        return SentenceTransformer("all-MiniLM-L6-v2")
-
+    def load_model(): return SentenceTransformer("all-MiniLM-L6-v2")
     model = load_model()
 
     def load_documents(folder="knowledge"):
         if not os.path.exists(folder):
             os.makedirs(folder)
-            sample_data = {
-                "dbms.txt": "DBMS organizes data efficiently using tables and schemas.",
-                "os.txt": "Operating systems manage memory, processes, and hardware.",
-                "sorting.txt": "Sorting algorithms arrange data in ascending or descending order."
-            }
-            for file, content in sample_data.items():
-                with open(os.path.join(folder, file), "w") as f:
-                    f.write(content)
-
+            data = {"dbms.txt": "DBMS organizes data...", "os.txt": "Operating systems manage...", "sorting.txt": "Sorting algorithms..."}
+            for k,v in data.items():
+                with open(os.path.join(folder,k), "w") as f: f.write(v)
         docs, names = [], []
         for file in os.listdir(folder):
             if file.endswith(".txt"):
-                with open(os.path.join(folder, file), "r", encoding="utf-8") as f:
-                    docs.append(f.read())
-                    names.append(file.replace(".txt", "").title())
-
+                with open(os.path.join(folder,file),"r", encoding="utf-8") as f:
+                    docs.append(f.read()); names.append(file.replace(".txt","").title())
         return docs, names
 
     documents, doc_names = load_documents()
     doc_embeddings = model.encode(documents, convert_to_tensor=True) if documents else None
 
-    # Sidebar
+    # Sleek Sidebar
     with st.sidebar:
-        st.markdown("## 🎓 Campus Brain")
-        st.write(f"Logged in as: **{st.session_state.user_name}**")
+        st.markdown("<h2 class='grad-text'>Campus Brain</h2>", unsafe_allow_html=True)
+        st.caption(f"Welcome back, **{st.session_state.user_name}**")
         st.markdown("---")
-
-        menus = {
-            "🏠 Dashboard": "welcome",
-            "🔍 Search": "search",
-            "📚 Library": "library",
-            "📈 Progress": "recommend",
-            "💬 AI Chat": "chat"
-        }
-
-        for label, screen in menus.items():
-            if st.button(label, use_container_width=True):
-                st.session_state.screen = screen
+        
+        menus = {"🏠 Dashboard": "welcome", "🔍 Search": "search", "📚 Library": "library", "💬 AI Chat": "chat"}
+        for lbl, scr in menus.items():
+            if st.button(lbl, use_container_width=True, type="primary" if st.session_state.screen == scr else "secondary"):
+                st.session_state.screen = scr
                 st.rerun()
-
+        
         st.markdown("---")
         if st.button("🚪 Logout", use_container_width=True):
             st.session_state.authenticated = False
             st.rerun()
 
-    # Screens
+    # Dashboard Views
     if st.session_state.screen == "welcome":
-
         st.title(f"Hello, {st.session_state.user_name} 👋")
-
+        
         c1, c2, c3 = st.columns(3)
-        with c1:
-            st.markdown('<div class="db-card"><b>Topics Mastered</b><h2>14</h2></div>', unsafe_allow_html=True)
-        with c2:
-            st.markdown('<div class="db-card"><b>Study Hours</b><h2>42.5</h2></div>', unsafe_allow_html=True)
-        with c3:
-            st.markdown('<div class="db-card"><b>Learning Rank</b><h2>#8</h2></div>', unsafe_allow_html=True)
+        with c1: st.markdown('<div class="db-card"><b>Topics Mastered</b><h2>14</h2></div>', unsafe_allow_html=True)
+        with c2: st.markdown('<div class="db-card"><b>Study Hours</b><h2>42.5</h2></div>', unsafe_allow_html=True)
+        with c3: st.markdown('<div class="db-card"><b>Learning Rank</b><h2>#8</h2></div>', unsafe_allow_html=True)
 
+        st.markdown("### Progress Overview")
         st.progress(0.7)
-        st.caption("70% of Semester Completed")
+        st.caption("You are ahead of 85% of your classmates.")
 
     elif st.session_state.screen == "search":
-
-        st.markdown("## 🔍 Smart Academic Search")
-        query = st.text_input("Ask anything about your syllabus...")
-
+        st.markdown("## 🔍 Neural Topic Search")
+        query = st.text_input("", placeholder="Explain database normalization...")
+        
         if query and doc_embeddings is not None:
             query_embedding = model.encode(query, convert_to_tensor=True)
             sims = util.cos_sim(query_embedding, doc_embeddings)[0]
             best_idx = torch.argmax(sims).item()
-
-            st.markdown(f"### 📄 {doc_names[best_idx]}")
-            st.write(documents[best_idx])
+            
+            st.markdown(f"### 📄 Source: {doc_names[best_idx]}")
+            st.markdown(f"<div class='db-card'>{documents[best_idx]}</div>", unsafe_allow_html=True)
 
     elif st.session_state.screen == "chat":
-
         st.markdown("## 💬 AI Study Assistant")
-        user_input = st.chat_input("Ask a question...")
-
-        if user_input:
-            with st.chat_message("user"):
-                st.write(user_input)
-            with st.chat_message("assistant"):
-                st.write("That is a great question regarding your study material!")
-
-    elif st.session_state.screen == "library":
-
-        st.markdown("## 📚 Study Library")
-        cols = st.columns(3)
-        for i, name in enumerate(doc_names):
-            with cols[i % 3]:
-                st.button(f"📄 {name}", use_container_width=True)
-
-    elif st.session_state.screen == "recommend":
-
-        st.markdown("## 📈 Performance Tracking")
-        st.info("Analytics coming soon.")
-
+        u_input = st.chat_input("Ask about your syllabus...")
+        if u_input:
+            with st.chat_message("user"): st.write(u_input)
+            with st.chat_message("assistant"): st.write("That's an insightful question. In the context of your current module, this concept handles resource optimization by...")
 
