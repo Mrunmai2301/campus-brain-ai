@@ -211,9 +211,7 @@ else:
 
     st.markdown("## 📚 Study Library")
 
-    # -------------------------
-    # If a document is opened
-    # -------------------------
+    # If document is open
     if st.session_state.open_doc is not None:
 
         idx = st.session_state.open_doc
@@ -229,9 +227,7 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-    # -------------------------
     # Library grid
-    # -------------------------
     else:
 
         cols = st.columns(3)
