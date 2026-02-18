@@ -61,11 +61,32 @@ defaults = {
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
+# ----------------------------
+# USER DATABASE FUNCTIONS
+# ----------------------------
 
+USER_FILE = "users.txt"
+
+def load_users():
+    if not os.path.exists(USER_FILE):
+        return {}
+    
+    users = {}
+    with open(USER_FILE, "r") as f:
+        for line in f:
+            name, email, password = line.strip().split("|")
+            users[email] = {"name": name, "password": password}
+    return users
+
+def save_user(name, email, password):
+    with open(USER_FILE, "a") as f:
+        f.write(f"{name}|{email}|{password}\n")
 # ----------------------------
 # AUTH SCREEN
 # ----------------------------
 if not st.session_state.authenticated:
+
+    users = load_users()
 
     st.markdown("""
     <div style='text-align:center; margin-top:120px;'>
@@ -79,14 +100,20 @@ if not st.session_state.authenticated:
 
         if st.session_state.auth_mode == "login":
 
+            st.subheader("Login")
+
             email = st.text_input("Email")
             password = st.text_input("Password", type="password")
 
-            if st.button("Enter Dashboard", use_container_width=True):
-                if email and password:
-                    st.session_state.user_name = email.split("@")[0].capitalize()
+            if st.button("Login", use_container_width=True):
+
+                if email in users and users[email]["password"] == password:
+                    st.session_state.user_name = users[email]["name"]
                     st.session_state.authenticated = True
+                    st.success("Login Successful!")
                     st.rerun()
+                else:
+                    st.error("Invalid Email or Password")
 
             st.button(
                 "Create Account",
@@ -96,14 +123,22 @@ if not st.session_state.authenticated:
 
         else:
 
+            st.subheader("Create Account")
+
             name = st.text_input("Full Name")
             email = st.text_input("Email")
             password = st.text_input("Password", type="password")
 
-            if st.button("Register Now", use_container_width=True):
-                if name and email and password:
-                    st.session_state.user_name = name
-                    st.session_state.authenticated = True
+            if st.button("Register", use_container_width=True):
+
+                if email in users:
+                    st.error("Email already exists")
+                elif not name or not email or not password:
+                    st.warning("Please fill all fields")
+                else:
+                    save_user(name, email, password)
+                    st.success("Account Created! Please Login")
+                    st.session_state.auth_mode = "login"
                     st.rerun()
 
             st.button(
