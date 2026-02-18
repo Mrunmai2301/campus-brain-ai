@@ -12,7 +12,11 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🎓 Campus Brain - Basic AI Study Assistant")
+# ----------------------------
+# SESSION STATE
+# ----------------------------
+if "page" not in st.session_state:
+    st.session_state.page = "home"
 
 # ----------------------------
 # LOAD MODEL
@@ -55,24 +59,42 @@ documents, doc_names = load_documents()
 doc_embeddings = model.encode(documents, convert_to_tensor=True)
 
 # ----------------------------
-# AI CHAT SECTION
+# HOME PAGE
 # ----------------------------
-st.markdown("## 💬 AI Study Assistant")
+if st.session_state.page == "home":
 
-user_input = st.text_input("Ask something about your syllabus...")
+    st.title("🎓 Campus Brain - Basic AI Study Assistant")
 
-if user_input:
+    st.write("Welcome! Click below to start chatting with AI.")
 
-    # Find best matching document
-    query_embedding = model.encode(user_input, convert_to_tensor=True)
-    sims = util.cos_sim(query_embedding, doc_embeddings)[0]
-    best_idx = torch.argmax(sims).item()
+    if st.button("💬 Go to AI Chat"):
+        st.session_state.page = "chat"
+        st.rerun()
 
-    context = documents[best_idx]
-    topic_name = doc_names[best_idx]
+# ----------------------------
+# CHAT PAGE
+# ----------------------------
+elif st.session_state.page == "chat":
 
-    # Simple explanation generator
-    explanation = f"""
+    # Back Button
+    if st.button("← Back to Home"):
+        st.session_state.page = "home"
+        st.rerun()
+
+    st.markdown("## 💬 AI Study Assistant")
+
+    user_input = st.text_input("Ask something about your syllabus...")
+
+    if user_input:
+
+        query_embedding = model.encode(user_input, convert_to_tensor=True)
+        sims = util.cos_sim(query_embedding, doc_embeddings)[0]
+        best_idx = torch.argmax(sims).item()
+
+        context = documents[best_idx]
+        topic_name = doc_names[best_idx]
+
+        explanation = f"""
 ### 📘 Topic: {topic_name}
 
 Let me explain this clearly:
@@ -85,6 +107,8 @@ This topic is about understanding how {topic_name.lower()} works in computer sci
 ### 💡 Example:
 If you study {topic_name}, you will understand its practical usage in real-world systems.
 """
+
+        st.markdown(explanation)
 
     st.markdown(explanation)
 
