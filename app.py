@@ -180,39 +180,36 @@ else:
             st.rerun()
 
     # ----------------------------
-    # SCREENS
+    # SCREENS (PROPERLY INDENTED)
     # ----------------------------
 
-   # HOME
-if st.session_state.screen == "welcome":
+    if st.session_state.screen == "welcome":
 
-    st.markdown(f"""
-        <h1 style='margin-top:30px;'>
-            Hello, {st.session_state.user_name} 👋
-        </h1>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <h1 style='margin-top:30px;'>
+                Hello, {st.session_state.user_name} 👋
+            </h1>
+            """, unsafe_allow_html=True)
 
-    st.markdown("### What would you like to do?")
+        st.markdown("### What would you like to do?")
 
-    col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns(3)
 
-    with col1:
-        if st.button("🔍 Search", use_container_width=True):
-            st.session_state.screen = "search"
-            st.rerun()
+        with col1:
+            if st.button("🔍 Search", use_container_width=True):
+                st.session_state.screen = "search"
+                st.rerun()
 
-    with col2:
-        if st.button("📚 Library", use_container_width=True):
-            st.session_state.screen = "library"
-            st.rerun()
+        with col2:
+            if st.button("📚 Library", use_container_width=True):
+                st.session_state.screen = "library"
+                st.rerun()
 
-    with col3:
-        if st.button("💬 AI Chat", use_container_width=True):
-            st.session_state.screen = "chat"
-            st.rerun()
+        with col3:
+            if st.button("💬 AI Chat", use_container_width=True):
+                st.session_state.screen = "chat"
+                st.rerun()
 
-
-    # SEARCH
     elif st.session_state.screen == "search":
 
         st.markdown("## 🔍 Smart Academic Search")
@@ -229,7 +226,6 @@ if st.session_state.screen == "welcome":
             st.session_state.screen = "results"
             st.rerun()
 
-    # RESULTS
     elif st.session_state.screen == "results":
 
         if st.button("← Back to Search"):
@@ -241,7 +237,6 @@ if st.session_state.screen == "welcome":
             unsafe_allow_html=True
         )
 
-    # LIBRARY
     elif st.session_state.screen == "library":
 
         st.markdown("## 📚 Study Library")
@@ -257,7 +252,6 @@ if st.session_state.screen == "welcome":
                     unsafe_allow_html=True
                 )
 
-    # CHAT (Now without OpenAI)
     elif st.session_state.screen == "chat":
 
         st.markdown("## 💬 AI Study Assistant")
@@ -266,7 +260,6 @@ if st.session_state.screen == "welcome":
             st.session_state.screen = "welcome"
             st.rerun()
 
-        # Show chat history
         for role, message in st.session_state.chat_history:
             with st.chat_message(role):
                 st.write(message)
@@ -300,6 +293,7 @@ Understanding {topic_name} helps you apply it in real-world systems.
 
             with st.chat_message("assistant"):
                 st.markdown(answer)
+
 
 
 
