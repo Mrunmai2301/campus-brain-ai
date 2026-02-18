@@ -183,13 +183,34 @@ else:
     # SCREENS
     # ----------------------------
 
-    # HOME
-    if st.session_state.screen == "welcome":
-        st.markdown(f"""
+   # HOME
+if st.session_state.screen == "welcome":
+
+    st.markdown(f"""
         <h1 style='margin-top:30px;'>
             Hello, {st.session_state.user_name} 👋
         </h1>
         """, unsafe_allow_html=True)
+
+    st.markdown("### What would you like to do?")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button("🔍 Search", use_container_width=True):
+            st.session_state.screen = "search"
+            st.rerun()
+
+    with col2:
+        if st.button("📚 Library", use_container_width=True):
+            st.session_state.screen = "library"
+            st.rerun()
+
+    with col3:
+        if st.button("💬 AI Chat", use_container_width=True):
+            st.session_state.screen = "chat"
+            st.rerun()
+
 
     # SEARCH
     elif st.session_state.screen == "search":
