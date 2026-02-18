@@ -88,7 +88,20 @@ def toggle_auth():
 # ---------------------------------
 if not st.session_state.authenticated:
 
-    st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
+    st.markdown("""
+<h1 style='
+text-align:center;
+font-size:48px;
+font-weight:800;
+background: linear-gradient(90deg,#818cf8,#c084fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:20px;
+'>
+🎓 Campus Brain
+</h1>
+""", unsafe_allow_html=True)
+
 
     with st.container():
         st.markdown('<div class="auth-container">', unsafe_allow_html=True)
