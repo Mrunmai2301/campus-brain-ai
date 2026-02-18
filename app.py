@@ -115,33 +115,38 @@ def toggle_auth():
 # ---------------------------------
 # AUTH SCREEN
 # ---------------------------------
+# ---------------------------------
+# AUTH SCREEN
+# ---------------------------------
 if not st.session_state.authenticated:
 
+    # 1. Main Title (Placed outside any container/div to prevent styling bleed)
     st.markdown(
-        "<h1 style='text-align:center;margin-top:40px;' class='grad-text'>🎓 Campus Brain</h1>",
+        "<h1 style='text-align:center; margin-top:40px; margin-bottom:20px;' class='grad-text'>🎓 Campus Brain</h1>",
         unsafe_allow_html=True
     )
 
-    # REMOVED: with st.container(): 
-    # Just use the custom div for the background card
+    # 2. Opening the Card Div
     st.markdown('<div class="auth-container">', unsafe_allow_html=True)
 
+    # 3. Card Title
     title = "Create Account" if st.session_state.auth_mode == "register" else "Welcome Back"
-
     st.markdown(
-        f"<h2 class='grad-text' style='text-align:center;margin-bottom:30px;'>{title}</h2>",
+        f"<h2 class='grad-text' style='text-align:center; margin-bottom:30px;'>{title}</h2>",
         unsafe_allow_html=True
     )
 
+    # 4. Inputs and Logic
     if st.session_state.auth_mode == "register":
-        name = st.text_input("Full Name")
-        email = st.text_input("University Email")
-        password = st.text_input("Password", type="password")
-        confirm_pw = st.text_input("Confirm Password", type="password")
+        name = st.text_input("Full Name", key="reg_name")
+        email = st.text_input("University Email", key="reg_email")
+        password = st.text_input("Password", type="password", key="reg_pass")
+        confirm_pw = st.text_input("Confirm Password", type="password", key="reg_confirm")
 
         college = st.selectbox(
             "Institution",
-            ["Engineering College", "Tech Institute", "Science University"]
+            ["Engineering College", "Tech Institute", "Science University"],
+            key="reg_col"
         )
 
         if st.button("Complete Registration", use_container_width=True, type="primary"):
@@ -151,27 +156,22 @@ if not st.session_state.authenticated:
             else:
                 st.error("Please fill all fields")
 
-        st.markdown(
-            "<p style='text-align:center;color:#94a3b8;margin-top:15px;'>Already have an account?</p>",
-            unsafe_allow_html=True
-        )
+        st.markdown("<p style='text-align:center; color:#94a3b8; margin-top:15px;'>Already have an account?</p>", unsafe_allow_html=True)
         st.button("Back to Login", on_click=toggle_auth, use_container_width=True)
 
     else:
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
+        email = st.text_input("Email", key="log_email")
+        password = st.text_input("Password", type="password", key="log_pass")
 
         if st.button("Sign In to Campus Brain", use_container_width=True, type="primary"):
             if email and password:
                 st.session_state.user_name = email.split("@")[0].capitalize()
                 handle_login()
 
-        st.markdown(
-            "<p style='text-align:center;color:#94a3b8;margin-top:15px;'>New to the platform?</p>",
-            unsafe_allow_html=True
-        )
+        st.markdown("<p style='text-align:center; color:#94a3b8; margin-top:15px;'>New to the platform?</p>", unsafe_allow_html=True)
         st.button("Create Student Profile", on_click=toggle_auth, use_container_width=True)
 
+    # 5. Closing the Card Div
     st.markdown("</div>", unsafe_allow_html=True)
 
 
