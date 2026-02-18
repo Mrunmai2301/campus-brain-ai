@@ -1,3 +1,7 @@
+from openai import OpenAI
+import os
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 import streamlit as st
 import os
 import torch
@@ -236,31 +240,47 @@ else:
                         unsafe_allow_html=True
                     )
       # CHAT
-    elif st.session_state.screen == "chat":
+   elif st.session_state.screen == "chat":
 
-        st.markdown("## 💬 AI Study Assistant")
+    st.markdown("## 💬 AI Study Assistant")
 
-        user_input = st.chat_input("Ask something about your syllabus...")
+    user_input = st.chat_input("Ask something about your syllabus...")
 
-        if user_input:
+    if user_input:
 
-            with st.chat_message("user"):
-                st.write(user_input)
+        with st.chat_message("user"):
+            st.write(user_input)
 
-            # Convert question to embedding
-            query_embedding = model.encode(user_input, convert_to_tensor=True)
+        # Retrieve most relevant document
+        query_embedding = model.encode(user_input, convert_to_tensor=True)
+        sims = util.cos_sim(query_embedding, doc_embeddings)[0]
+        best_idx = torch.argmax(sims).item()
+        context = documents[best_idx]
 
-            # Compute similarity
-            sims = util.cos_sim(query_embedding, doc_embeddings)[0]
-            best_idx = torch.argmax(sims).item()
+        # Send to OpenAI
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful AI study assistant that explains academic topics clearly in simple student-friendly language."
+                },
+                {
+                    "role": "user",
+                    "content": f"""
+                    Context from syllabus:
+                    {context}
 
-            best_doc = documents[best_idx]
-            best_score = sims[best_idx].item()
+                    Student Question:
+                    {user_input}
 
-            with st.chat_message("assistant"):
+                    Explain clearly with examples and simple language.
+                    """
+                }
+            ]
+        )
 
-                if best_score > 0.3:
-                    st.write(f"📚 From {doc_names[best_idx]}:")
-                    st.write(best_doc)
-                else:
-                    st.write("I couldn't find relevant material in your knowledge base.")
+        ai_answer = response.choices[0].message.content
+
+        with st.chat_message("assistant"):
+            st.write(ai_answer)
