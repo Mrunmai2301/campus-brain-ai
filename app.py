@@ -147,19 +147,38 @@ def toggle_auth():
 # AUTH SCREEN
 # ---------------------------------
 if not st.session_state.authenticated:
-
-    st.markdown("""
-    <div style='text-align:center; margin-top:40px; margin-bottom:30px;'>
-    <h1 style='font-size:56px;font-weight:800;
-    background:linear-gradient(90deg,#a78bfa,#c084fc);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-    🎓 Campus Brain
+st.markdown("""
+<div style="
+    max-width:750px;
+    margin:60px auto 40px auto;
+    padding:50px 30px;
+    text-align:center;
+    border-radius:28px;
+    background:rgba(30,41,59,0.6);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 0 60px rgba(139,92,246,0.25);
+">
+    <h1 style="
+        font-size:64px;
+        font-weight:800;
+        margin-bottom:15px;
+        background:linear-gradient(90deg,#a78bfa,#c084fc);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+    ">
+        🎓 Campus Brain
     </h1>
-    <p style='color:#94a3b8; font-size:18px; margin-top:10px;'>
-    Your AI-Powered Academic Companion
+
+    <p style="
+        color:#94a3b8;
+        font-size:20px;
+        font-weight:500;
+    ">
+        Your AI-Powered Academic Companion
     </p>
-    </div>
-    """, unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
     with st.container():
 
