@@ -33,13 +33,12 @@ st.markdown("""
     color: var(--text-main);
 }
 
-/* Hide default Streamlit header/footer */
 header, footer { visibility: hidden; }
 
 /* Auth card */
 .auth-container {
     max-width: 480px;
-    margin: 40px auto;
+    margin: 60px auto;
     padding: 45px 35px;
     background: var(--card-bg);
     border-radius: 24px;
@@ -94,7 +93,6 @@ defaults = {
     "user_name": "",
     "screen": "welcome",
     "auth_mode": "login",
-    "open_doc": None,
 }
 
 for key, value in defaults.items():
@@ -106,6 +104,7 @@ for key, value in defaults.items():
 # ---------------------------------
 def handle_login():
     st.session_state.authenticated = True
+    st.session_state.screen = "welcome"
     st.rerun()
 
 def toggle_auth():
@@ -118,15 +117,15 @@ def toggle_auth():
 # ---------------------------------
 if not st.session_state.authenticated:
 
-    # Clean Title (No Black Box, No Tagline)
     st.markdown(
-        "<h1 style='text-align:center;margin-top:50px;' class='grad-text'>🎓 Campus Brain</h1>",
+        "<h1 style='text-align:center;margin-top:40px;' class='grad-text'>🎓 Campus Brain</h1>",
         unsafe_allow_html=True
     )
 
     st.markdown('<div class="auth-container">', unsafe_allow_html=True)
 
     title = "Create Account" if st.session_state.auth_mode == "register" else "Welcome Back"
+
     st.markdown(
         f"<h2 class='grad-text' style='text-align:center;margin-bottom:30px;'>{title}</h2>",
         unsafe_allow_html=True
@@ -151,7 +150,10 @@ if not st.session_state.authenticated:
             else:
                 st.error("Please fill all fields")
 
-        st.markdown("<p style='text-align:center;color:#94a3b8;'>Already have an account?</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='text-align:center;color:#94a3b8;'>Already have an account?</p>",
+            unsafe_allow_html=True
+        )
         st.button("Back to Login", on_click=toggle_auth, use_container_width=True)
 
     else:
@@ -164,7 +166,10 @@ if not st.session_state.authenticated:
                 st.session_state.user_name = email.split("@")[0].capitalize()
                 handle_login()
 
-        st.markdown("<p style='text-align:center;color:#94a3b8;'>New to the platform?</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p style='text-align:center;color:#94a3b8;'>New to the platform?</p>",
+            unsafe_allow_html=True
+        )
         st.button("Create Student Profile", on_click=toggle_auth, use_container_width=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -198,23 +203,87 @@ else:
                 with open(os.path.join(folder, file), "r", encoding="utf-8") as f:
                     docs.append(f.read())
                     names.append(file.replace(".txt", "").title())
+
         return docs, names
 
     documents, doc_names = load_documents()
     doc_embeddings = model.encode(documents, convert_to_tensor=True) if documents else None
 
-    st.title(f"Hello, {st.session_state.user_name} 👋")
+    # Sidebar
+    with st.sidebar:
+        st.markdown("## 🎓 Campus Brain")
+        st.write(f"Logged in as: **{st.session_state.user_name}**")
+        st.markdown("---")
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.markdown('<div class="db-card"><b>Topics Mastered</b><h2>14</h2></div>', unsafe_allow_html=True)
-    with c2:
-        st.markdown('<div class="db-card"><b>Study Hours</b><h2>42.5</h2></div>', unsafe_allow_html=True)
-    with c3:
-        st.markdown('<div class="db-card"><b>Learning Rank</b><h2>#8</h2></div>', unsafe_allow_html=True)
+        menus = {
+            "🏠 Dashboard": "welcome",
+            "🔍 Search": "search",
+            "📚 Library": "library",
+            "📈 Progress": "recommend",
+            "💬 AI Chat": "chat"
+        }
 
-    st.progress(0.7)
-    st.caption("70% of Semester Completed")
+        for label, screen in menus.items():
+            if st.button(label, use_container_width=True):
+                st.session_state.screen = screen
+                st.rerun()
 
+        st.markdown("---")
+        if st.button("🚪 Logout", use_container_width=True):
+            st.session_state.authenticated = False
+            st.rerun()
+
+    # Screens
+    if st.session_state.screen == "welcome":
+
+        st.title(f"Hello, {st.session_state.user_name} 👋")
+
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.markdown('<div class="db-card"><b>Topics Mastered</b><h2>14</h2></div>', unsafe_allow_html=True)
+        with c2:
+            st.markdown('<div class="db-card"><b>Study Hours</b><h2>42.5</h2></div>', unsafe_allow_html=True)
+        with c3:
+            st.markdown('<div class="db-card"><b>Learning Rank</b><h2>#8</h2></div>', unsafe_allow_html=True)
+
+        st.progress(0.7)
+        st.caption("70% of Semester Completed")
+
+    elif st.session_state.screen == "search":
+
+        st.markdown("## 🔍 Smart Academic Search")
+        query = st.text_input("Ask anything about your syllabus...")
+
+        if query and doc_embeddings is not None:
+            query_embedding = model.encode(query, convert_to_tensor=True)
+            sims = util.cos_sim(query_embedding, doc_embeddings)[0]
+            best_idx = torch.argmax(sims).item()
+
+            st.markdown(f"### 📄 {doc_names[best_idx]}")
+            st.write(documents[best_idx])
+
+    elif st.session_state.screen == "chat":
+
+        st.markdown("## 💬 AI Study Assistant")
+        user_input = st.chat_input("Ask a question...")
+
+        if user_input:
+            with st.chat_message("user"):
+                st.write(user_input)
+            with st.chat_message("assistant"):
+                st.write("That is a great question regarding your study material!")
+
+    elif st.session_state.screen == "library":
+
+        st.markdown("## 📚 Study Library")
+        cols = st.columns(3)
+        for i, name in enumerate(doc_names):
+            with cols[i % 3]:
+                st.button(f"📄 {name}", use_container_width=True)
+
+    elif st.session_state.screen == "recommend":
+
+        st.markdown("## 📈 Performance Tracking")
         st.info("Analytics coming soon.")
+
 
