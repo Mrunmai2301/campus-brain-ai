@@ -240,7 +240,7 @@ else:
                         unsafe_allow_html=True
                     )
 
-    # CHAT
+       # CHAT
     elif st.session_state.screen == "chat":
 
         st.markdown("## 💬 AI Study Assistant")
@@ -269,14 +269,14 @@ else:
                     {
                         "role": "user",
                         "content": f"""
-                        Context from syllabus:
-                        {context}
+Context from syllabus:
+{context}
 
-                        Student Question:
-                        {user_input}
+Student Question:
+{user_input}
 
-                        Explain clearly with examples and simple language.
-                        """
+Explain clearly with examples and simple language.
+"""
                     }
                 ]
             )
@@ -285,3 +285,4 @@ else:
 
             with st.chat_message("assistant"):
                 st.write(ai_answer)
+
