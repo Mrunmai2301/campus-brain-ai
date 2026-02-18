@@ -148,37 +148,40 @@ def toggle_auth():
 # ---------------------------------
 if not st.session_state.authenticated:
 
-   st.markdown("""
-<div style='text-align:center; margin-top:40px; margin-bottom:30px;'>
-<h1 style='font-size:56px;font-weight:800;
-background:linear-gradient(90deg,#a78bfa,#c084fc);
--webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
-🎓 Campus Brain
-</h1>
-<p style='color:#94a3b8; font-size:18px; margin-top:10px;'>
-Your AI-Powered Academic Companion
-</p>
-</div>
-""", unsafe_allow_html=True)
-
-
+    st.markdown("""
+    <div style='text-align:center; margin-top:40px; margin-bottom:30px;'>
+    <h1 style='font-size:56px;font-weight:800;
+    background:linear-gradient(90deg,#a78bfa,#c084fc);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
+    🎓 Campus Brain
+    </h1>
+    <p style='color:#94a3b8; font-size:18px; margin-top:10px;'>
+    Your AI-Powered Academic Companion
+    </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     with st.container():
-       st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="auth-container">', unsafe_allow_html=True)
 
         title = "Create Account" if st.session_state.auth_mode == "register" else "Welcome Back"
-        st.markdown(f"<h1 class='grad-text' style='text-align:center;'>{title}</h1>", unsafe_allow_html=True)
+        st.markdown(
+            f"<h1 class='grad-text' style='text-align:center;'>{title}</h1>",
+            unsafe_allow_html=True
+        )
 
         if st.session_state.auth_mode == "register":
+
             name = st.text_input("Full Name")
             email = st.text_input("University Email")
             password = st.text_input("Password", type="password")
             confirm_pw = st.text_input("Confirm Password", type="password")
-            college = st.selectbox("Institution", [
-                "Engineering College",
-                "Tech Institute",
-                "Science University"
-            ])
+
+            college = st.selectbox(
+                "Institution",
+                ["Engineering College", "Tech Institute", "Science University"]
+            )
 
             if st.button("Complete Registration", use_container_width=True, type="primary"):
                 if name and email and password:
@@ -187,10 +190,14 @@ Your AI-Powered Academic Companion
                 else:
                     st.error("Please fill all fields")
 
-            st.markdown("<p style='text-align:center; font-size:0.9rem; color:#94a3b8;'>Already have an account?</p>", unsafe_allow_html=True)
+            st.markdown(
+                "<p style='text-align:center;color:#94a3b8;'>Already have an account?</p>",
+                unsafe_allow_html=True
+            )
             st.button("Back to Login", on_click=toggle_auth, use_container_width=True)
 
         else:
+
             email = st.text_input("Email")
             password = st.text_input("Password", type="password")
 
@@ -199,7 +206,10 @@ Your AI-Powered Academic Companion
                     st.session_state.user_name = email.split("@")[0].capitalize()
                     handle_login()
 
-            st.markdown("<p style='text-align:center; font-size:0.9rem; color:#94a3b8;'>New to the platform?</p>", unsafe_allow_html=True)
+            st.markdown(
+                "<p style='text-align:center;color:#94a3b8;'>New to the platform?</p>",
+                unsafe_allow_html=True
+            )
             st.button("Create Student Profile", on_click=toggle_auth, use_container_width=True)
 
         st.markdown("</div>", unsafe_allow_html=True)
