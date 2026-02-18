@@ -32,7 +32,7 @@ st.markdown("""
     .auth-container {
         max-width: 450px;
         margin: auto;
-        padding: 40px;
+        padding: 20px;
         background: rgba(30, 41, 59, 0.7);
         border-radius: 24px;
         border: 1px solid rgba(255,255,255,0.1);
