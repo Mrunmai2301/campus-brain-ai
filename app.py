@@ -9,7 +9,8 @@ import torch
 st.set_page_config(
     page_title="Campus Brain AI",
     page_icon="🎓",
-    layout="wide"
+    layout="centered"
+
 )
 
 # ---------------------------------
@@ -17,42 +18,101 @@ st.set_page_config(
 # ---------------------------------
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-    :root {
-        --primary: #6366f1;
-        --bg-dark: #0f172a;
-        --card-bg: #1e293b;
-        --text-main: #f8fafc;
-    }
+:root {
+    --primary: #8b5cf6;
+    --primary-glow: rgba(139, 92, 246, 0.4);
+    --bg-dark: #0b1120;
+    --card-bg: rgba(30, 41, 59, 0.65);
+    --text-main: #f8fafc;
+    --muted: #94a3b8;
+}
 
-    * { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .stApp { background-color: var(--bg-dark); color: var(--text-main); }
+* {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
 
-    .auth-container {
-        max-width: 450px;
-        margin: auto;
-        padding: 20px;
-        background: rgba(30, 41, 59, 0.7);
-        border-radius: 24px;
-        border: 1px solid rgba(255,255,255,0.1);
-        backdrop-filter: blur(10px);
-    }
+.stApp {
+    background: radial-gradient(circle at top, #111827, #0b1120 60%);
+    color: var(--text-main);
+}
 
-    .db-card {
-        background: var(--card-bg);
-        padding: 24px;
-        border-radius: 16px;
-        border: 1px solid rgba(255,255,255,0.05);
-        margin-bottom: 20px;
-    }
+/* Hide default header */
+header {visibility: hidden;}
+footer {visibility: hidden;}
 
-    .grad-text {
-        background: linear-gradient(90deg, #818cf8, #c084fc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 800;
-    }
+/* AUTH CONTAINER */
+.auth-container {
+    max-width: 480px;
+    margin: 60px auto;
+    padding: 50px 40px;
+    background: var(--card-bg);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 0 40px rgba(139,92,246,0.15);
+}
+
+/* INPUT FIELDS */
+div[data-baseweb="input"] > div {
+    background: #1e293b !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    padding: 6px;
+}
+
+div[data-baseweb="input"] input {
+    color: white !important;
+}
+
+/* PRIMARY BUTTON */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(90deg,#8b5cf6,#6366f1);
+    border: none;
+    border-radius: 14px;
+    padding: 12px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.stButton > button[kind="primary"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--primary-glow);
+}
+
+/* SECONDARY BUTTON */
+.stButton > button {
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: white;
+}
+
+/* GRADIENT TEXT */
+.grad-text {
+    background: linear-gradient(90deg,#a78bfa,#c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+/* DASHBOARD CARDS */
+.db-card {
+    background: rgba(30,41,59,0.7);
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    transition: 0.3s ease;
+}
+
+.db-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 25px rgba(139,92,246,0.25);
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -88,23 +148,23 @@ def toggle_auth():
 # ---------------------------------
 if not st.session_state.authenticated:
 
-    st.markdown("""
-<h1 style='
-text-align:center;
-font-size:48px;
-font-weight:800;
-background: linear-gradient(90deg,#818cf8,#c084fc);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-margin-bottom:20px;
-'>
+   st.markdown("""
+<div style='text-align:center; margin-top:40px; margin-bottom:30px;'>
+<h1 style='font-size:56px;font-weight:800;
+background:linear-gradient(90deg,#a78bfa,#c084fc);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;'>
 🎓 Campus Brain
 </h1>
+<p style='color:#94a3b8; font-size:18px; margin-top:10px;'>
+Your AI-Powered Academic Companion
+</p>
+</div>
 """, unsafe_allow_html=True)
 
 
+
     with st.container():
-        st.markdown('<div class="auth-container">', unsafe_allow_html=True)
+       st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
 
         title = "Create Account" if st.session_state.auth_mode == "register" else "Welcome Back"
         st.markdown(f"<h1 class='grad-text' style='text-align:center;'>{title}</h1>", unsafe_allow_html=True)
