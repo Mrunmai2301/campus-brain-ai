@@ -38,24 +38,24 @@ campus-brain-ai/
 └── README.md
 ---
 
-## ▶️ How to Run Locally
+## How to Run Locally
 
-1️⃣ Clone the repository
+1️Clone the repository
 
 git clone https://github.com/your-username/campus-brain-ai.git  
 cd campus-brain-ai  
 
-2️⃣ Install dependencies
+2️ Install dependencies
 
 pip install -r requirements.txt  
 
-3️⃣ Run the application
+3️ Run the application
 
 streamlit run app.py  
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 - The app loads study material from the `knowledge` folder.
 - It converts text into embeddings using `all-MiniLM-L6-v2`.
@@ -65,7 +65,7 @@ streamlit run app.py
 
 ---
 
-## 📌 Future Improvements
+## Future Improvements
 
 - Secure password hashing
 - SQLite / Firebase database integration
@@ -76,7 +76,7 @@ streamlit run app.py
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 This app can be deployed easily using:
 
@@ -95,7 +95,7 @@ Passionate about Web Development & AI
 
 ---
 
-## ⭐ Support
+## Support
 
 If you like this project, give it a ⭐ on GitHub!
 
